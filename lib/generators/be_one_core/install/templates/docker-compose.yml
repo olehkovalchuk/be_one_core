@@ -1,0 +1,80 @@
+version: '2'
+
+services:
+  postgres:
+    image: 'postgres:10.3-alpine'
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+    env_file:
+      - '.env'
+
+  redis:
+    image: 'redis:4.0-alpine'
+    command: redis-server --requirepass yourpassword
+    volumes:
+      - 'redis:/data'
+
+  app:
+    depends_on:
+      - 'postgres'
+      - 'redis'
+      - 'elasticsearch'
+      - 'fluentd'
+    build: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - bundle:/bundle
+      - '.:/app'
+    env_file:
+      - '.env'
+    links:
+      - fluentd
+  # sidekiq:
+  #   depends_on:
+  #     - 'postgres'
+  #     - 'redis'
+  #   build: .
+  #   command: sidekiq -C config/sidekiq.yml.erb
+  #   volumes:
+  #     - '.:/app'
+  #   env_file:
+  #     - '.env'
+
+  # cable:
+  #   depends_on:
+  #     - 'redis'
+  #   build: .
+  #   command: puma -p 28080 cable/config.ru
+  #   ports:
+  #     - '28080:28080'
+  #   volumes:
+  #     - '.:/app'
+  #   env_file:
+  #     - '.env'
+  elasticsearch:
+    image: elasticsearch:2.3
+    volumes:
+      - elasticsearch:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  fluentd:
+    build: ./docker/fluentd
+    volumes:
+      - ./docker/fluentd/fluent.conf:/fluentd/etc/fluent.conf
+    links:
+      - elasticsearch
+  # kibana:
+  #   image: kibana
+  #   links:
+  #     - "elasticsearch"
+  #   ports:
+  #     - "5601:5601"
+
+
+volumes:
+  bundle:
+  redis:
+  postgres:
+  elasticsearch:
+  fluentd:

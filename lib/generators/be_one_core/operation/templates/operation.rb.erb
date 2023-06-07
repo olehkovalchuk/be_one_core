@@ -1,0 +1,21 @@
+<% if namespace %>
+module <%= namespace.classify %>
+  module <%= model.classify %>Operation
+    class Base 
+      include Operation::Base
+      crudify do 
+        model_name <%= model.classify %>
+      end
+    end
+  end
+end
+<% else %>
+module <%= model.classify %>Operation
+  class Base 
+    include Operation::Base
+    crudify do 
+      model_name <%= model.classify %>
+    end
+  end
+end
+<% end %>

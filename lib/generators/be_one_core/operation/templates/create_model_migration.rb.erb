@@ -1,0 +1,12 @@
+class Create<%= namespace.present? ? namespace.classify : '' %><%= model.classify %> < ActiveRecord::Migration<%= "[#{Rails::VERSION::MAJOR}.#{Rails::VERSION::MINOR}]"  %>
+
+  def change
+
+    create_table :<%= [namespace,model].reject(&:blank?).join("_").underscore.pluralize %> do |t|
+      t.datetime "created_at", null: false
+      t.datetime "updated_at", null: false
+    end
+
+  end
+end
+

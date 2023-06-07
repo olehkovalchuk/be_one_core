@@ -1,0 +1,13 @@
+<% if namespace %>
+module <%= namespace.classify %>
+  class <%= model.classify %>  < ApplicationRecord
+
+  end
+end
+<% else %>
+class <%= model.classify %> < ApplicationRecord
+
+end
+<% end %>
+
+
